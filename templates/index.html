@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MailGuard AI | Security Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- TOP NAVIGATION -->
+    <nav class="topbar">
+        <div class="brand">
+            <div class="brand-logo">M</div>
+            <div>
+                <h2>MailGuard<span>-AI</span></h2>
+                <p>Security Dashboard</p>
+            </div>
+        </div>
+
+        <div class="live-status">
+            <span class="live-dot"></span>
+            System Live
+        </div>
+    </nav>
+
+    <main class="dashboard-content">
+
+        <!-- MANUAL EMAIL SCANNER -->
+        <section class="panel scan-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Email scanner</h2>
+                    <p>Analyse suspicious email messages</p>
+                </div>
+                <span class="panel-icon">✉</span>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="scanner-intro">
+                    <span class="small-label">NEW SECURITY SCAN</span>
+                    <h3>Inspect an email</h3>
+                    <p>Paste an email below to check whether it is spam or legitimate.</p>
+                </div>
+
+                <form method="POST">
+
+                    <label for="email">EMAIL MESSAGE</label>
+
+                    <textarea
+                        id="email"
+                        name="email"
+                        placeholder="Paste your email content here..."
+                        required>{{ email_text or '' }}</textarea>
+
+                    <button type="submit">
+                        <span>⌕</span> Analyse message
+                    </button>
+
+                </form>
+
+                {% if result %}
+
+                <div class="scan-result {{ 'spam-result' if result == 'SPAM' else 'ham-result' }}">
+
+                    {% if result == 'SPAM' %}
+                    <div class="result-symbol danger">!</div>
+                    <div class="result-content">
+                        <span class="small-label">SCAN COMPLETE</span>
+                        <h3>Spam detected</h3>
+                        <p>This message was classified as spam. Avoid suspicious links and attachments.</p>
+                    </div>
+                    <span class="risk-badge high">HIGH RISK</span>
+
+                    {% else %}
+                    <div class="result-symbol safe">✓</div>
+                    <div class="result-content">
+                        <span class="small-label">SCAN COMPLETE</span>
+                        <h3>No spam detected</h3>
+                        <p>This message was classified as legitimate by the model.</p>
+                    </div>
+                    <span class="risk-badge low">LOW RISK</span>
+                    {% endif %}
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+                    <div class="empty-icon">◎</div>
+                    <h3>Awaiting email scan</h3>
+                    <p>Your latest analysis will appear here.</p>
+                </div>
+
+                {% endif %}
+
+            </div>
+        </section>
+
+        <!-- MODEL ANALYTICS -->
+        <section class="panel analytics-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Model analytics</h2>
+                    <p>Performance on held-out test emails</p>
+                </div>
+                <span class="panel-icon">⌁</span>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="accuracy-card">
+                    <div>
+                        <span class="small-label">TEST ACCURACY</span>
+                        <h3>98.21<span>%</span></h3>
+                        <p>550 correct predictions out of 560</p>
+                    </div>
+                    <div class="accuracy-ring">
+                        <span>98.2</span>
+                    </div>
+                </div>
+
+                <div class="chart-heading">
+                    <h3>Classification performance</h3>
+                    <p>Precision, recall and F1-score</p>
+                </div>
+
+                <div class="chart-legend">
+                    <span><i class="legend-purple"></i> Precision</span>
+                    <span><i class="legend-blue"></i> Recall</span>
+                    <span><i class="legend-yellow"></i> F1-score</span>
+                </div>
+
+                <div class="performance-chart">
+
+                    <div class="chart-row">
+                        <span class="chart-label">HAM</span>
+                        <div class="bar-group">
+                            <div class="bar purple" style="width:98%"></div>
+                            <div class="bar blue" style="width:99%"></div>
+                            <div class="bar yellow" style="width:98%"></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <span class="chart-label">SPAM</span>
+                        <div class="bar-group">
+                            <div class="bar purple" style="width:99%"></div>
+                            <div class="bar blue" style="width:97%"></div>
+                            <div class="bar yellow" style="width:98%"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="chart-scale">
+                    <span>0%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <h3 class="matrix-title">Confusion matrix</h3>
+                <p class="matrix-subtitle">Predictions on 560 test emails</p>
+
+                <div class="confusion-matrix">
+                    <div class="matrix-cell correct">
+                        <strong>277</strong>
+                        <span>HAM → HAM</span>
+                    </div>
+                    <div class="matrix-cell incorrect">
+                        <strong>3</strong>
+                        <span>HAM → SPAM</span>
+                    </div>
+                    <div class="matrix-cell incorrect">
+                        <strong>7</strong>
+                        <span>SPAM → HAM</span>
+                    </div>
+                    <div class="matrix-cell correct">
+                        <strong>273</strong>
+                        <span>SPAM → SPAM</span>
+                    </div>
+                </div>
+
+                <div class="model-footer">
+                    <span>MODEL: MULTINOMIAL NAIVE BAYES</span>
+                    <span>TF-IDF</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- GMAIL INTEGRATION -->
+        <section class="panel gmail-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Gmail integration</h2>
+                    <p>Connect your inbox and scan recent messages</p>
+                </div>
+                <span class="panel-icon">✉</span>
+            </div>
+
+            <div class="panel-body">
+
+                {% if gmail_connected %}
+
+                    <div class="gmail-status connected">
+                        <span class="live-dot"></span>
+                        Gmail connected successfully
+                    </div>
+
+                    <div class="gmail-actions">
+                        <a href="{{ url_for('home', fetch='1') }}"
+                           class="gmail-button">
+                            ↻ Fetch and scan emails
+                        </a>
+
+                        <a href="{{ url_for('disconnect_gmail') }}"
+                           class="gmail-disconnect">
+                            Disconnect Gmail
+                        </a>
+                    </div>
+
+                    {% if gmail_error %}
+                        <div class="gmail-message error">
+                            {{ gmail_error }}
+                        </div>
+                    {% endif %}
+
+                    {% if gmail_emails %}
+
+                        <h3 class="gmail-section-title">
+                            Recent email analysis
+                        </h3>
+
+                        <div class="gmail-email-list">
+
+                            {% for email in gmail_emails %}
+
+                                <div class="gmail-email-card">
+
+                                    <div class="gmail-email-top">
+                                        <h4>{{ email.subject }}</h4>
+
+                                        <span class="gmail-label {{ 'spam-label' if email.prediction == 'SPAM' else 'ham-label' }}">
+                                            {{ email.prediction }}
+                                        </span>
+                                    </div>
+
+                                    <p class="gmail-sender">
+                                        From: {{ email.sender }}
+                                    </p>
+
+                                    <p class="gmail-date">
+                                        {{ email.date }}
+                                    </p>
+
+                                    <p class="gmail-preview">
+                                        {{ email.body }}
+                                    </p>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% elif not gmail_error %}
+
+                        <div class="empty-state">
+                            <h3>No emails to display</h3>
+                            <p>Click fetch and scan emails to check your inbox.</p>
+                        </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="gmail-connect-intro">
+                        <h3>Protect your Gmail inbox</h3>
+
+                        <p>
+                            Connect your Google account to fetch recent
+                            inbox messages and classify them using
+                            the MailGuard-AI machine learning model.
+                        </p>
+
+                        <p class="gmail-privacy">
+                            Read-only access. MailGuard-AI cannot send,
+                            delete or modify your emails.
+                        </p>
+
+                        <a href="{{ url_for('connect_gmail') }}"
+                           class="gmail-button">
+                            Connect Gmail
+                        </a>
+                    </div>
+
+                {% endif %}
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <span>MAILGUARD-AI © 2026</span>
+        <span>Machine Learning Based Email Security</span>
+    </footer>
+
+</div>
+
+</body>
+</html>
