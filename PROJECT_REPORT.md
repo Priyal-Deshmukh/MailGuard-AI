@@ -25,6 +25,8 @@ The system uses Natural Language Processing (NLP) techniques to convert textual 
 
 The application also includes Gmail integration through the Gmail API and OAuth 2.0 authentication. This feature allows users to connect their Gmail account and retrieve inbox messages for classification. The dashboard displays email information along with the predicted classification.
 
+The model was evaluated using 5-fold stratified cross-validation on a dataset containing 2,796 emails. It achieved an accuracy of **98.32%**, with precision, recall, and F1-score of approximately **0.98** for both Spam and Ham classes.
+
 MailGuard AI demonstrates how machine learning and web technologies can be combined to develop a practical email security solution. The project provides a foundation for further improvements such as advanced classification techniques, phishing detection, and real-time email monitoring.
 
 ---
@@ -201,9 +203,11 @@ The development can be performed using a personal computer and freely available 
 
 The dataset used in MailGuard AI contains email text and corresponding classification labels.
 
-The dataset is used to train the machine-learning model to distinguish between spam and legitimate email messages.
+The dataset is prepared from email files stored in the `easy_ham_2` and `spam_2` folders. The preparation script extracts readable email content and assigns the corresponding Ham or Spam label.
 
-The dataset was manually entered/compiled by the project developer for this project. No external dataset source or public dataset URL has been specified in the project information.
+The prepared dataset is stored in `dataset/emails.csv`.
+
+The final dataset contains **2,796 email records**.
 
 ## 4.2 Dataset Attributes
 
@@ -213,10 +217,22 @@ The dataset contains the following main fields:
 |---|---|
 | text | Contains the email message content |
 | label | Represents the category of the email |
- 
+
 The label identifies whether an email belongs to the Spam or Ham category.
 
-## 4.3 Data Preprocessing
+## 4.3 Dataset Distribution
+
+The dataset contains the following class distribution:
+
+| Email Category | Number of Emails |
+|---|---:|
+| Ham | 1,400 |
+| Spam | 1,396 |
+| **Total** | **2,796** |
+
+The dataset has a nearly balanced distribution between the two categories.
+
+## 4.4 Data Preprocessing
 
 Text preprocessing is an important step in preparing email content for machine learning.
 
@@ -228,16 +244,20 @@ The project uses TF-IDF vectorization with the following settings:
 
 These settings help convert email text into numerical features suitable for classification.
 
-## 4.4 Training and Testing Split
+## 4.5 Training and Testing Approach
 
-The dataset is divided into training and testing subsets using an 80:20 split.
+The model development process uses labelled email data to learn patterns for distinguishing Spam from Ham.
 
-- 80% of the data is used for training.
-- 20% of the data is used for testing.
+For model performance evaluation, **5-fold stratified cross-validation** was performed.
 
-The split uses `random_state=42` and stratification based on the labels.
+In this approach:
 
-Stratification helps maintain the class distribution in both subsets.
+- The dataset is divided into five folds.
+- Each fold is used once for validation while the remaining folds are used for training.
+- Stratification helps maintain the class distribution across the folds.
+- The results from all folds are combined to calculate the evaluation metrics.
+
+This provides an estimate of the model's performance across different portions of the dataset.
 
 ---
 
@@ -280,7 +300,7 @@ The machine-learning pipeline describes how email data is processed and classifi
 flowchart TD
     A[Email Dataset] --> B[Load Dataset]
     B --> C[Separate Text and Labels]
-    C --> D[Train-Test Split]
+    C --> D[Cross-Validation]
     D --> E[TF-IDF Feature Extraction]
     E --> F[Train Multinomial Naive Bayes]
     F --> G[Evaluate Model]
@@ -378,14 +398,15 @@ The model learns from the training dataset and uses the learned patterns to clas
 
 ## 6.4 Model Training
 
-The model training process includes:
+The model development process includes:
 
 1. Loading the email dataset.
 2. Separating email text and labels.
-3. Dividing the dataset into training and testing sets.
+3. Preparing the data for model development.
 4. Applying TF-IDF feature extraction.
 5. Training the Multinomial Naive Bayes classifier.
-6. Saving the trained model for use in the Flask application.
+6. Evaluating model performance.
+7. Saving the trained model for use in the Flask application.
 
 ## 6.5 Model Saving
 
@@ -394,6 +415,13 @@ After training, the model is saved as a serialized file:
 `models/spam_classifier.pkl`
 
 The Flask application loads this saved model to perform predictions without retraining it every time the application starts.
+
+The saved model is a Scikit-learn Pipeline containing:
+
+- TF-IDF Vectorizer
+- Multinomial Naive Bayes Classifier
+
+This allows text processing and classification to be performed together.
 
 ---
 
@@ -504,50 +532,106 @@ The main testing objectives are:
 
 ## 8.3 Model Evaluation Metrics
 
-The performance of a classification model can be evaluated using several metrics.
+The performance of MailGuard AI is evaluated using classification metrics.
 
 ### Accuracy
 
-Accuracy measures the proportion of correctly classified predictions.
+Accuracy measures the proportion of correctly classified emails out of all evaluated emails.
+
+It provides an overall measure of the model's classification performance.
 
 ### Precision
 
-Precision measures how many messages predicted as spam are actually spam.
+Precision measures how many emails predicted as belonging to a particular class actually belong to that class.
+
+For spam detection, it indicates how many emails predicted as Spam are actually Spam.
 
 ### Recall
 
-Recall measures how many actual spam messages are correctly identified.
+Recall measures how many actual emails belonging to a particular class are correctly identified by the model.
+
+For spam detection, it indicates how many actual Spam emails are successfully detected.
 
 ### F1-Score
 
 F1-score is the harmonic mean of precision and recall.
 
+It provides a combined measure of these two classification metrics.
+
 ### Confusion Matrix
 
 A confusion matrix represents correct and incorrect predictions for each class.
 
-The following values are used:
+The matrix contains:
 
 - True Positive
 - True Negative
 - False Positive
 - False Negative
 
-**Important:** Actual accuracy, precision, recall, F1-score, and confusion-matrix values must be obtained by running the evaluation on the project dataset. No numerical performance results are claimed in this report because verified evaluation values have not been provided.
+These values help identify the types of classification errors made by the model.
 
-## 8.4 Cross-Validation and ROC/Precision-Recall Analysis
+## 8.4 Model Evaluation Results
 
-Cross-validation can be used to evaluate model stability across multiple data splits.
+The model was evaluated using **5-fold stratified cross-validation** on the complete dataset containing 2,796 emails.
 
-ROC curves and Precision-Recall curves can provide additional information about classification performance.
+The evaluation produced the following results:
 
-These evaluations are possible extensions to the current testing process. They should only be reported as completed experiments if they have actually been performed.
+### Overall Performance
+
+| Evaluation Metric | Result |
+|---|---:|
+| Accuracy | **98.32%** |
+| Total Emails Evaluated | 2,796 |
+
+### Classification Report
+
+| Class | Precision | Recall | F1-Score | Support |
+|---|---:|---:|---:|---:|
+| Ham | 0.98 | 0.98 | 0.98 | 1,400 |
+| Spam | 0.98 | 0.98 | 0.98 | 1,396 |
+
+The macro average and weighted average for precision, recall, and F1-score were also approximately 0.98.
+
+### Confusion Matrix
+
+The confusion matrix obtained during evaluation is:
+
+| Actual / Predicted | Ham | Spam |
+|---|---:|---:|
+| Actual Ham | 1,379 | 21 |
+| Actual Spam | 26 | 1,370 |
+
+### Interpretation of Results
+
+The confusion matrix shows that:
+
+- 1,379 Ham emails were correctly classified as Ham.
+- 21 Ham emails were incorrectly classified as Spam.
+- 1,370 Spam emails were correctly classified as Spam.
+- 26 Spam emails were incorrectly classified as Ham.
+
+Therefore, the model correctly classified 2,749 out of 2,796 evaluated emails.
+
+The overall accuracy of 98.32% indicates strong classification performance on the evaluated dataset.
+
+The precision, recall, and F1-score values of approximately 0.98 for both classes indicate that the model performs consistently when identifying Spam and Ham emails.
+
+**Note:** These values represent 5-fold stratified cross-validation results. They are evaluation estimates on the specified dataset and should not be interpreted as a guarantee of performance on every real-world email.
+
+## 8.5 Cross-Validation and Further Analysis
+
+5-fold stratified cross-validation was used to evaluate model performance across different portions of the dataset.
+
+This approach helps assess how consistently the model performs when trained and evaluated on different folds.
+
+Additional analysis, such as ROC curves and Precision-Recall curves, can be considered in future improvements to provide further information about classification performance.
 
 ---
 
 # 9. RESULTS AND DISCUSSION
 
-## 9.1 Expected System Output
+## 9.1 System Output
 
 The application produces a classification result for the submitted email text.
 
@@ -556,13 +640,28 @@ The predicted categories are:
 - **Spam:** The model identifies the message as spam.
 - **Ham:** The model identifies the message as legitimate.
 
-## 9.2 Dashboard Results
+## 9.2 Model Performance Results
+
+The model achieved an accuracy of **98.32%** during 5-fold stratified cross-validation.
+
+The evaluation included 1,400 Ham emails and 1,396 Spam emails.
+
+The model correctly classified:
+
+- 1,379 Ham emails.
+- 1,370 Spam emails.
+
+A total of 47 emails were incorrectly classified during the evaluation.
+
+These results demonstrate the model's ability to distinguish between Spam and Ham emails in the prepared dataset.
+
+## 9.3 Dashboard Results
 
 The Flask dashboard displays the classification result in a user-friendly format.
 
 For Gmail integration, retrieved inbox messages are displayed with relevant email information and their predicted classifications.
 
-## 9.3 Discussion
+## 9.4 Discussion
 
 The project demonstrates the integration of machine learning, natural language processing, and web development.
 
@@ -570,9 +669,13 @@ TF-IDF converts email text into numerical features, while Multinomial Naive Baye
 
 Flask provides the application interface, and Gmail API integration extends the system to work with authenticated inbox messages.
 
-The actual effectiveness of the classifier depends on the quality, size, and class distribution of the dataset. Therefore, numerical performance claims should be based on measured evaluation results.
+The model evaluation produced an accuracy of 98.32%, with precision, recall, and F1-score values of approximately 0.98 for both Spam and Ham categories.
 
-## 9.4 Screenshots
+The confusion matrix provides further information about correctly and incorrectly classified emails.
+
+The results indicate strong performance on the prepared dataset. However, actual performance on new emails may vary depending on the quality and diversity of the incoming messages.
+
+## 9.5 Screenshots
 
 Add actual screenshots of the working application in this section.
 
@@ -653,6 +756,8 @@ The system uses TF-IDF for feature extraction and Multinomial Naive Bayes for cl
 
 The project also includes Gmail API integration with OAuth 2.0 authentication, allowing inbox messages to be retrieved and classified.
 
+The model was evaluated using 5-fold stratified cross-validation on a dataset of 2,796 emails and achieved an accuracy of 98.32%. The precision, recall, and F1-score values were approximately 0.98 for both Spam and Ham categories.
+
 Through this project, practical knowledge of Python programming, machine learning, NLP, Flask application development, API integration, and authentication has been applied.
 
 MailGuard AI provides a foundation for developing more advanced email security applications.
@@ -664,7 +769,7 @@ The project can be improved in several ways:
 1. **Advanced Machine Learning Models:** Experiment with algorithms such as Support Vector Machines, Logistic Regression, and advanced neural networks.
 2. **Phishing Detection:** Extend the system to identify suspicious links and phishing-related content.
 3. **Improved Dataset:** Use larger and more diverse labelled datasets to improve generalization.
-4. **Model Evaluation:** Add cross-validation, confusion matrices, ROC curves, and Precision-Recall analysis.
+4. **Additional Model Analysis:** Add ROC curves and Precision-Recall analysis for further evaluation.
 5. **Real-Time Monitoring:** Explore periodic inbox monitoring with appropriate user authorization.
 6. **Improved User Interface:** Add more detailed analytics and classification history.
 7. **Multilingual Support:** Extend classification to emails written in different languages.
@@ -720,6 +825,10 @@ The following resources provide technical documentation relevant to the technolo
 | Gmail API | Interface for accessing Gmail services |
 | Model | Trained machine-learning algorithm |
 | Classification | Assigning input data to predefined categories |
+| Precision | Proportion of predicted positive-class emails that are correct |
+| Recall | Proportion of actual positive-class emails correctly identified |
+| F1-score | Harmonic mean of precision and recall |
+| Confusion Matrix | Table showing correct and incorrect classification predictions |
 
 ## 13.2 Project Directory Structure
 
@@ -729,12 +838,17 @@ The project contains the following major files and directories:
 Spam-Email-Detection/
 │
 ├── dataset/
+│   ├── easy_ham_2/
+│   ├── spam_2/
 │   └── emails.csv
 │
 ├── models/
 │   └── spam_classifier.pkl
 │
 ├── src/
+│   ├── prepare_dataset.py
+│   ├── predict.py
+│   └── train_model.py
 │
 ├── static/
 │   └── style.css
@@ -781,6 +895,12 @@ The exact contents of individual folders may vary according to the final project
 | Framework | Flask |
 | ML Algorithm | Multinomial Naive Bayes |
 | Feature Extraction | TF-IDF |
+| Dataset Size | 2,796 emails |
+| Evaluation Method | 5-fold Stratified Cross-Validation |
+| Accuracy | 98.32% |
+| Precision | Approximately 0.98 |
+| Recall | Approximately 0.98 |
+| F1-score | Approximately 0.98 |
 | Email Integration | Gmail API |
 | Authentication | OAuth 2.0 |
 
