@@ -1,124 +1,789 @@
-# MailGuard AI
-## Spam Email Detection System Using Machine Learning
-
-### 1. Abstract
-
-MailGuard AI is a machine learning-based email security application designed to identify spam and legitimate (ham) emails. It uses Natural Language Processing (NLP) techniques and a Multinomial Naive Bayes classifier to analyse email content and predict its category. The application also integrates with Gmail through the Gmail API and OAuth 2.0 authentication, allowing users to fetch inbox emails and scan them through the trained classification model.
-
-### 2. Problem Statement
-
-Email spam can expose users to unwanted messages, misleading content and potentially harmful links. Manually identifying spam emails can be time-consuming. Therefore, an automated system is required to analyse email content and distinguish spam messages from legitimate communication.
-
-### 3. Objectives
-
-- Develop an automated spam email classification system.
-- Apply NLP techniques to process email text.
-- Train a machine learning model to classify emails as Spam or Ham.
-- Integrate Gmail to retrieve emails for automated scanning.
-- Provide an interactive dashboard to display classification results.
-
-### 4. Technologies Used
-
-| Component | Technology |
-|---|---|
-| Programming Language | Python |
-| Web Framework | Flask |
-| Machine Learning | Scikit-learn |
-| NLP and Feature Extraction | TF-IDF |
-| Classification Algorithm | Multinomial Naive Bayes |
-| Email Integration | Gmail API |
-| Authentication | OAuth 2.0 |
-| Frontend | HTML, CSS |
-| Development Environment | Visual Studio Code |
-| Version Control | Git and GitHub |
-
-### 5. Dataset Description
-
-The project uses an email dataset stored in `dataset/emails.csv`.
-
-The dataset contains email text and corresponding labels. These labels represent two categories:
-
-- **Spam:** Unwanted or unsolicited email.
-- **Ham:** Legitimate email.
-
-The dataset is used to train and evaluate the machine learning classifier.
-
-### 6. Methodology
-
-The system follows these steps:
-
-1. **Data Loading:** The email dataset is loaded using Python.
-2. **Data Preparation:** Email text and corresponding labels are separated for model training.
-3. **Data Splitting:** The dataset is divided into training and testing sets using an 80:20 split, with stratification and a fixed random state.
-4. **Text Vectorization:** TF-IDF (Term Frequency–Inverse Document Frequency) converts email text into numerical features. The vectorizer uses English stop-word removal and a maximum of 10,000 features.
-5. **Model Training:** A Multinomial Naive Bayes classifier is trained using the extracted features.
-6. **Model Saving:** The trained classifier is saved as `spam_classifier.pkl` for use in the Flask application.
-7. **Prediction:** New email content is processed and classified as Spam or Ham.
-
-### 7. System Architecture
-
-The application consists of four main components:
-
-- **Frontend:** Provides the user interface for scanning emails and viewing results.
-- **Flask Backend:** Handles user requests, email processing and model predictions.
-- **Machine Learning Model:** Analyses vectorized email text and generates classifications.
-- **Gmail Integration:** Uses OAuth 2.0 and the Gmail API to retrieve inbox messages for scanning.
-
-### 8. Implementation
-
-MailGuard AI provides two main ways to analyse emails:
-
-**A. Manual Email Scanning**
-
-Users can enter email content into the dashboard. The Flask backend processes the text using the trained model and displays the predicted category.
-
-**B. Gmail Email Scanning**
-
-Users can authenticate their Gmail account using OAuth 2.0. The application retrieves inbox messages through the Gmail API, extracts relevant email information and classifies each message using the trained model.
-
-The dashboard presents email details and their corresponding Spam or Ham classifications.
-
-### 9. Key Features
-
-- Machine learning-based spam detection.
-- NLP-based text feature extraction.
-- Manual email content scanning.
-- Gmail account integration.
-- Automated inbox email classification.
-- Interactive security dashboard.
-- Separate Spam and Ham result views.
-
-### 10. Testing and Results
-
-The application has been tested locally for its main functionalities, including dashboard access, manual email classification and Gmail email retrieval and scanning.
-
-The trained model generates Spam or Ham predictions for the processed email content.
-
-Quantitative evaluation metrics such as accuracy, precision, recall and F1-score should be included after verification from the actual model evaluation output.
-
-### 11. Limitations
-
-- Classification depends on the quality and representation of the training dataset.
-- Predictions may not always be correct for unusual or previously unseen email content.
-- Gmail integration requires valid OAuth authentication and API access.
-- The system currently focuses on email text classification rather than complete malicious-link or attachment analysis.
-
-### 12. Future Scope
-
-- Improve classification performance using larger and more diverse datasets.
-- Introduce advanced NLP and deep learning techniques.
-- Add phishing URL and suspicious attachment detection.
-- Provide more detailed email security analytics.
-- Improve classification evaluation and monitoring.
-
-### 13. Conclusion
-
-MailGuard AI demonstrates the practical application of machine learning and Natural Language Processing in email security. By combining a TF-IDF-based text processing pipeline, a Multinomial Naive Bayes classifier, Flask and Gmail API integration, the system provides an automated approach to identifying spam and legitimate emails through a user-friendly dashboard.
-
-The project demonstrates how machine learning can be integrated into a real-world web application to address a common digital communication problem.
+# MAILGUARD AI
+## Intelligent Spam Email Detection and Security Dashboard
 
 ---
 
-**Project:** MailGuard AI  
-**Domain:** Artificial Intelligence and Machine Learning  
-**Application Type:** Web-Based Email Spam Detection System
+# PROJECT REPORT
+
+**Project Title:** MailGuard AI – Intelligent Spam Email Detection and Security Dashboard
+
+**Submitted by:**  
+**Name:** Priyal Prasad Deshmukh  
+**Roll Number:** CS3125
+
+**Department:** Computer Science and Engineering  
+**Institution:** CSMSS, CS COE  
+**Academic Year:** 2026–2027
+
+---
+
+# ABSTRACT
+
+MailGuard AI is a machine-learning-based email security application developed to identify and classify unwanted spam emails. The project aims to provide a simple and user-friendly platform through which email content can be analysed and classified as either Spam or Ham (legitimate email).
+
+The system uses Natural Language Processing (NLP) techniques to convert textual email content into numerical features. TF-IDF (Term Frequency–Inverse Document Frequency) is used for feature extraction, while the Multinomial Naive Bayes algorithm is used for classification. The trained machine-learning model is integrated into a Flask web application that provides an interactive dashboard for users.
+
+The application also includes Gmail integration through the Gmail API and OAuth 2.0 authentication. This feature allows users to connect their Gmail account and retrieve inbox messages for classification. The dashboard displays email information along with the predicted classification.
+
+MailGuard AI demonstrates how machine learning and web technologies can be combined to develop a practical email security solution. The project provides a foundation for further improvements such as advanced classification techniques, phishing detection, and real-time email monitoring.
+
+---
+
+# 1. INTRODUCTION
+
+## 1.1 Background
+
+Email is one of the most widely used methods of digital communication. It is used for personal communication, education, business activities, and sharing important information.
+
+However, email platforms are frequently affected by unwanted messages known as spam emails. These messages may contain advertisements, misleading information, suspicious links, or potentially harmful content.
+
+Manually identifying spam emails can be time-consuming. Therefore, automated spam detection systems are useful for analysing email content and identifying unwanted messages.
+
+Machine learning provides techniques that can learn patterns from previously labelled data and use those patterns to classify new messages.
+
+MailGuard AI applies machine-learning and natural language processing techniques to email spam detection through a web-based dashboard.
+
+## 1.2 Problem Statement
+
+The increasing number of unwanted emails creates difficulties for users who need to identify legitimate messages from spam messages.
+
+Manual identification requires users to examine email content individually. This process can be inefficient, particularly when the number of incoming emails is large.
+
+The project addresses this problem by developing an automated system that analyses email text and predicts whether the message is Spam or Ham.
+
+## 1.3 Objectives
+
+The main objectives of MailGuard AI are:
+
+1. To develop a machine-learning-based email spam detection system.
+2. To preprocess email text for classification.
+3. To extract textual features using TF-IDF.
+4. To train a Multinomial Naive Bayes classification model.
+5. To develop a web interface using Flask.
+6. To provide an interface for entering email text and viewing predictions.
+7. To integrate Gmail using the Gmail API and OAuth 2.0 authentication.
+8. To retrieve inbox messages and classify their content.
+9. To display classification results through a user-friendly dashboard.
+
+## 1.4 Scope of the Project
+
+The scope of the project includes:
+
+- Text-based spam and legitimate email classification.
+- Machine-learning model training and prediction.
+- Email text preprocessing and feature extraction.
+- Flask-based web application development.
+- Gmail account connection through OAuth 2.0.
+- Retrieval and classification of inbox messages.
+- Display of email details and classification results.
+
+The current system focuses on classifying email text. It does not claim to provide complete protection against every type of phishing attack, malicious attachment, or email-based security threat.
+
+## 1.5 Applications
+
+MailGuard AI can be useful for:
+
+- Identifying unwanted emails.
+- Demonstrating automated email classification.
+- Understanding practical applications of machine learning.
+- Learning how NLP techniques work with textual data.
+- Demonstrating Gmail API integration.
+- Building a foundation for more advanced email security applications.
+
+---
+
+# 2. LITERATURE REVIEW / RELATED WORK
+
+## 2.1 Existing Spam Detection Approaches
+
+Email spam detection has been studied using several approaches, including rule-based filtering, keyword matching, blacklisting, and machine-learning algorithms.
+
+Traditional systems often use predefined rules to identify unwanted messages. Such systems can be useful but may have difficulty identifying new spam patterns that do not match existing rules.
+
+Machine-learning approaches use labelled examples to learn patterns from email content. These approaches can automatically classify messages based on the features extracted from the text.
+
+## 2.2 Machine Learning in Spam Detection
+
+Several machine-learning algorithms can be applied to text classification:
+
+- Naive Bayes
+- Support Vector Machines
+- Logistic Regression
+- Decision Trees
+- Random Forest
+- Neural Networks
+
+Naive Bayes is commonly used for text classification because it is computationally efficient and works with numerical text features.
+
+## 2.3 Natural Language Processing
+
+Natural Language Processing enables computers to process and analyse human language.
+
+In this project, email content is treated as textual data. The text is converted into numerical features so that the machine-learning algorithm can process it.
+
+TF-IDF is used to represent the importance of words in a document relative to a collection of documents.
+
+## 2.4 Limitations of Existing Approaches
+
+Some limitations of basic spam detection approaches include:
+
+1. Dependence on predefined filtering rules.
+2. Difficulty identifying previously unseen spam patterns.
+3. Limited flexibility when new types of unwanted messages appear.
+4. Lack of a simple interface for testing email content.
+5. Separation between email access and spam classification in basic demonstrations.
+
+## 2.5 Proposed Approach
+
+MailGuard AI combines text classification with a Flask-based dashboard.
+
+The system uses TF-IDF for feature extraction and Multinomial Naive Bayes for classification. It also integrates Gmail through the Gmail API to retrieve inbox messages for classification.
+
+This approach provides an accessible demonstration of machine-learning-based spam detection.
+
+---
+
+# 3. SYSTEM ANALYSIS
+
+## 3.1 Existing System
+
+Traditional email filtering systems may use predefined rules, sender information, keywords, and other filtering mechanisms to identify unwanted messages.
+
+Although these techniques are useful, they may not always identify new or changing spam patterns.
+
+## 3.2 Proposed System
+
+The proposed MailGuard AI system uses machine learning to classify email content.
+
+The system accepts email text from the user or retrieves messages through Gmail integration. The text is processed and passed to the trained model, which predicts whether the email is Spam or Ham.
+
+The result is displayed through the Flask web dashboard.
+
+## 3.3 Feasibility Study
+
+### 3.3.1 Technical Feasibility
+
+The project is technically feasible because it uses commonly available programming languages, libraries, and development tools.
+
+The technologies used include:
+
+- Python
+- Flask
+- Scikit-learn
+- Pandas
+- NumPy
+- HTML
+- CSS
+- Gmail API
+- OAuth 2.0
+
+These technologies support machine-learning development and web application integration.
+
+### 3.3.2 Operational Feasibility
+
+The application provides a simple interface that allows users to enter email text and view classification results.
+
+Gmail integration allows authenticated users to retrieve inbox messages for classification.
+
+The system is designed to be understandable and easy to operate.
+
+### 3.3.3 Financial Feasibility
+
+The project primarily uses open-source programming languages and libraries.
+
+The development can be performed using a personal computer and freely available development tools. Therefore, the software development cost is relatively low.
+
+---
+
+# 4. DATASET DETAILS
+
+## 4.1 Dataset Overview
+
+The dataset used in MailGuard AI contains email text and corresponding classification labels.
+
+The dataset is used to train the machine-learning model to distinguish between spam and legitimate email messages.
+
+The dataset was manually entered/compiled by the project developer for this project. No external dataset source or public dataset URL has been specified in the project information.
+
+## 4.2 Dataset Attributes
+
+The dataset contains the following main fields:
+
+| Attribute | Description |
+|---|---|
+| text | Contains the email message content |
+| label | Represents the category of the email |
+ 
+The label identifies whether an email belongs to the Spam or Ham category.
+
+## 4.3 Data Preprocessing
+
+Text preprocessing is an important step in preparing email content for machine learning.
+
+The project uses TF-IDF vectorization with the following settings:
+
+- Lowercase conversion enabled.
+- English stop words removed.
+- Maximum feature count set to 10,000.
+
+These settings help convert email text into numerical features suitable for classification.
+
+## 4.4 Training and Testing Split
+
+The dataset is divided into training and testing subsets using an 80:20 split.
+
+- 80% of the data is used for training.
+- 20% of the data is used for testing.
+
+The split uses `random_state=42` and stratification based on the labels.
+
+Stratification helps maintain the class distribution in both subsets.
+
+---
+
+# 5. SYSTEM DESIGN
+
+## 5.1 System Architecture
+
+The system consists of the following major components:
+
+1. User Interface
+2. Flask Application
+3. Email Text Processing
+4. TF-IDF Vectorizer
+5. Trained Naive Bayes Model
+6. Gmail API Integration
+7. Classification Results Dashboard
+
+### System Architecture Diagram
+
+```mermaid
+flowchart TD
+    A[User] --> B[MailGuard AI Dashboard]
+    B --> C[Flask Application]
+    C --> D[Email Input]
+    C --> E[Gmail API Integration]
+    E --> F[Gmail Inbox Messages]
+    D --> G[Text Processing]
+    F --> G
+    G --> H[TF-IDF Vectorizer]
+    H --> I[Trained Naive Bayes Model]
+    I --> J[Spam or Ham Prediction]
+    J --> K[Dashboard Results]
+```
+
+## 5.2 Machine Learning Pipeline
+
+The machine-learning pipeline describes how email data is processed and classified.
+
+```mermaid
+flowchart TD
+    A[Email Dataset] --> B[Load Dataset]
+    B --> C[Separate Text and Labels]
+    C --> D[Train-Test Split]
+    D --> E[TF-IDF Feature Extraction]
+    E --> F[Train Multinomial Naive Bayes]
+    F --> G[Evaluate Model]
+    G --> H[Save Trained Model]
+    H --> I[Load Model in Flask]
+    I --> J[Predict New Email]
+    J --> K[Display Result]
+```
+
+## 5.3 Data Flow Diagram
+
+```mermaid
+flowchart TD
+    U[User] -->|Email Text| P1[Email Classification System]
+    P1 -->|Processed Text| P2[Feature Extraction]
+    P2 -->|Numerical Features| P3[Machine Learning Model]
+    P3 -->|Prediction| P1
+    P1 -->|Spam or Ham Result| U
+    G[Gmail API] -->|Inbox Messages| P1
+```
+
+## 5.4 Use Case Diagram
+
+```mermaid
+flowchart TD
+    User([User])
+    UC1[Enter Email Text]
+    UC2[Classify Email]
+    UC3[View Prediction]
+    UC4[Connect Gmail]
+    UC5[Fetch Inbox Emails]
+    UC6[View Email Classification]
+
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+```
+
+## 5.5 Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Dashboard
+    participant Flask
+    participant Model as ML Model
+
+    User->>UI: Enter email text
+    UI->>Flask: Submit email
+    Flask->>Model: Send email for prediction
+    Model-->>Flask: Return Spam or Ham
+    Flask-->>UI: Send classification result
+    UI-->>User: Display prediction
+```
+
+---
+
+# 6. MODEL DEVELOPMENT
+
+## 6.1 Machine Learning Algorithm
+
+The project uses the Multinomial Naive Bayes algorithm for email classification.
+
+Naive Bayes is a probabilistic classification algorithm based on Bayes' theorem.
+
+It calculates the probability of a class based on the features present in the input.
+
+For text classification, Multinomial Naive Bayes is commonly used with numerical word-frequency or TF-IDF features.
+
+## 6.2 TF-IDF Vectorization
+
+TF-IDF stands for Term Frequency–Inverse Document Frequency.
+
+It converts textual information into numerical values that represent the importance of words in a document.
+
+Term Frequency measures how frequently a word appears in a document.
+
+Inverse Document Frequency reduces the importance of words that appear frequently across many documents.
+
+The TF-IDF representation helps the classification algorithm identify useful patterns in email content.
+
+## 6.3 Multinomial Naive Bayes
+
+The Multinomial Naive Bayes algorithm calculates the probability that an email belongs to a particular category.
+
+The classification categories used in this project are:
+
+- Spam
+- Ham
+
+The model learns from the training dataset and uses the learned patterns to classify new email messages.
+
+## 6.4 Model Training
+
+The model training process includes:
+
+1. Loading the email dataset.
+2. Separating email text and labels.
+3. Dividing the dataset into training and testing sets.
+4. Applying TF-IDF feature extraction.
+5. Training the Multinomial Naive Bayes classifier.
+6. Saving the trained model for use in the Flask application.
+
+## 6.5 Model Saving
+
+After training, the model is saved as a serialized file:
+
+`models/spam_classifier.pkl`
+
+The Flask application loads this saved model to perform predictions without retraining it every time the application starts.
+
+---
+
+# 7. IMPLEMENTATION
+
+## 7.1 Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Main programming language |
+| Flask | Web application framework |
+| Scikit-learn | Machine-learning implementation |
+| Pandas | Dataset handling |
+| NumPy | Numerical operations |
+| TF-IDF | Text feature extraction |
+| Multinomial Naive Bayes | Email classification |
+| HTML | Web page structure |
+| CSS | Dashboard styling |
+| Gmail API | Gmail inbox integration |
+| OAuth 2.0 | User authentication |
+| Git and GitHub | Version control and project hosting |
+
+## 7.2 Hardware Requirements
+
+The application can be developed and executed on a standard personal computer.
+
+Minimum practical requirements include:
+
+- A computer capable of running Python.
+- Sufficient memory to load the dataset and trained model.
+- Internet connectivity for Gmail API integration.
+- A modern web browser.
+
+The exact hardware configuration used during development can be added here if required.
+
+## 7.3 Software Requirements
+
+- Windows or another supported operating system.
+- Python environment.
+- Visual Studio Code or another code editor.
+- Required Python libraries.
+- Web browser.
+- Gmail account for Gmail integration.
+
+## 7.4 Flask Application
+
+Flask is used to connect the machine-learning model with the web interface.
+
+The application accepts email text through a web form, passes the text to the trained model, and displays the predicted category.
+
+## 7.5 Gmail API Integration
+
+MailGuard AI includes Gmail integration through the Gmail API.
+
+OAuth 2.0 authentication is used to authorize access to the user's Gmail account.
+
+After authorization, the application can retrieve inbox messages and process their content for spam classification.
+
+The Gmail integration uses the read-only Gmail scope:
+
+`https://www.googleapis.com/auth/gmail.readonly`
+
+This scope allows the application to read email data without providing permission to modify or send emails.
+
+## 7.6 Dashboard Interface
+
+The dashboard provides an interface for users to interact with the application.
+
+Its main functions include:
+
+- Entering email text.
+- Submitting email content for classification.
+- Viewing Spam or Ham predictions.
+- Connecting a Gmail account.
+- Fetching inbox messages.
+- Viewing email details and classification results.
+
+---
+
+# 8. TESTING AND EVALUATION
+
+## 8.1 Testing Objectives
+
+Testing is performed to verify that the application behaves as expected.
+
+The main testing objectives are:
+
+1. To verify that the Flask application starts successfully.
+2. To check whether email text is accepted correctly.
+3. To verify that the trained model loads successfully.
+4. To check whether predictions are displayed correctly.
+5. To verify Gmail authentication.
+6. To check inbox message retrieval.
+7. To verify classification of retrieved messages.
+
+## 8.2 Functional Testing
+
+| Test Case | Expected Result |
+|---|---|
+| Open the application | Dashboard should load |
+| Enter email text | Text should be accepted |
+| Submit email text | Model should generate a prediction |
+| Classify a spam message | Spam result should be displayed when predicted |
+| Classify a legitimate message | Ham result should be displayed when predicted |
+| Connect Gmail | Authentication process should begin |
+| Fetch inbox messages | Retrieved messages should be displayed |
+| Classify fetched messages | Each processed message should display its predicted category |
+
+## 8.3 Model Evaluation Metrics
+
+The performance of a classification model can be evaluated using several metrics.
+
+### Accuracy
+
+Accuracy measures the proportion of correctly classified predictions.
+
+### Precision
+
+Precision measures how many messages predicted as spam are actually spam.
+
+### Recall
+
+Recall measures how many actual spam messages are correctly identified.
+
+### F1-Score
+
+F1-score is the harmonic mean of precision and recall.
+
+### Confusion Matrix
+
+A confusion matrix represents correct and incorrect predictions for each class.
+
+The following values are used:
+
+- True Positive
+- True Negative
+- False Positive
+- False Negative
+
+**Important:** Actual accuracy, precision, recall, F1-score, and confusion-matrix values must be obtained by running the evaluation on the project dataset. No numerical performance results are claimed in this report because verified evaluation values have not been provided.
+
+## 8.4 Cross-Validation and ROC/Precision-Recall Analysis
+
+Cross-validation can be used to evaluate model stability across multiple data splits.
+
+ROC curves and Precision-Recall curves can provide additional information about classification performance.
+
+These evaluations are possible extensions to the current testing process. They should only be reported as completed experiments if they have actually been performed.
+
+---
+
+# 9. RESULTS AND DISCUSSION
+
+## 9.1 Expected System Output
+
+The application produces a classification result for the submitted email text.
+
+The predicted categories are:
+
+- **Spam:** The model identifies the message as spam.
+- **Ham:** The model identifies the message as legitimate.
+
+## 9.2 Dashboard Results
+
+The Flask dashboard displays the classification result in a user-friendly format.
+
+For Gmail integration, retrieved inbox messages are displayed with relevant email information and their predicted classifications.
+
+## 9.3 Discussion
+
+The project demonstrates the integration of machine learning, natural language processing, and web development.
+
+TF-IDF converts email text into numerical features, while Multinomial Naive Bayes performs the classification.
+
+Flask provides the application interface, and Gmail API integration extends the system to work with authenticated inbox messages.
+
+The actual effectiveness of the classifier depends on the quality, size, and class distribution of the dataset. Therefore, numerical performance claims should be based on measured evaluation results.
+
+## 9.4 Screenshots
+
+Add actual screenshots of the working application in this section.
+
+Suggested screenshots:
+
+1. Main MailGuard AI dashboard.
+2. Manual email classification.
+3. Spam prediction result.
+4. Ham prediction result.
+5. Gmail authentication or connected state.
+6. Retrieved Gmail inbox messages with classification results.
+
+---
+
+# 10. DEPLOYMENT
+
+## 10.1 Deployment Overview
+
+MailGuard AI is designed as a Flask-based web application.
+
+The application can be executed locally using a Python virtual environment.
+
+The Flask server loads the trained machine-learning model and provides the dashboard through a local web address.
+
+## 10.2 Local Execution
+
+The application can be started using the following commands in PowerShell:
+
+```powershell
+cd C:\Users\HP\Spam-Email-Detection
+.\venv\Scripts\Activate.ps1
+python app.py
+```
+
+The application can then be accessed through:
+
+`http://127.0.0.1:5000`
+
+The Flask application requires the configured environment variables and valid Gmail OAuth credentials for the corresponding features.
+
+## 10.3 Deployment Architecture
+
+```mermaid
+flowchart TD
+    A[User Browser] --> B[Flask Web Server]
+    B --> C[MailGuard AI Application]
+    C --> D[Saved ML Model]
+    C --> E[Gmail API]
+    D --> F[Classification Result]
+    E --> G[Inbox Messages]
+    G --> C
+    F --> A
+```
+
+## 10.4 Security Considerations
+
+The application uses OAuth 2.0 for Gmail authentication.
+
+Sensitive authentication files and environment variables should not be published in a public GitHub repository.
+
+Files such as the following should remain private:
+
+- `credentials.json`
+- `token.json`
+- `.env`
+
+The application should use a secure secret key configuration rather than exposing sensitive values in source code.
+
+---
+
+# 11. CONCLUSION AND FUTURE SCOPE
+
+## 11.1 Conclusion
+
+MailGuard AI demonstrates the use of machine learning and natural language processing for email spam detection.
+
+The system uses TF-IDF for feature extraction and Multinomial Naive Bayes for classification. These components are integrated into a Flask web application that provides an interface for submitting email content and viewing predictions.
+
+The project also includes Gmail API integration with OAuth 2.0 authentication, allowing inbox messages to be retrieved and classified.
+
+Through this project, practical knowledge of Python programming, machine learning, NLP, Flask application development, API integration, and authentication has been applied.
+
+MailGuard AI provides a foundation for developing more advanced email security applications.
+
+## 11.2 Future Scope
+
+The project can be improved in several ways:
+
+1. **Advanced Machine Learning Models:** Experiment with algorithms such as Support Vector Machines, Logistic Regression, and advanced neural networks.
+2. **Phishing Detection:** Extend the system to identify suspicious links and phishing-related content.
+3. **Improved Dataset:** Use larger and more diverse labelled datasets to improve generalization.
+4. **Model Evaluation:** Add cross-validation, confusion matrices, ROC curves, and Precision-Recall analysis.
+5. **Real-Time Monitoring:** Explore periodic inbox monitoring with appropriate user authorization.
+6. **Improved User Interface:** Add more detailed analytics and classification history.
+7. **Multilingual Support:** Extend classification to emails written in different languages.
+8. **Attachment Analysis:** Explore safe metadata-based analysis of email attachments.
+
+---
+
+# 12. REFERENCES
+
+The following resources provide technical documentation relevant to the technologies used in this project.
+
+1. Scikit-learn Documentation – Text Feature Extraction:  
+   https://scikit-learn.org/stable/modules/feature_extraction.html
+
+2. Scikit-learn Documentation – Naive Bayes:  
+   https://scikit-learn.org/stable/modules/naive_bayes.html
+
+3. Flask Documentation:  
+   https://flask.palletsprojects.com/
+
+4. Google Gmail API Documentation:  
+   https://developers.google.com/workspace/gmail/api
+
+5. Google OAuth 2.0 Documentation:  
+   https://developers.google.com/identity/protocols/oauth2
+
+6. Python Documentation:  
+   https://docs.python.org/3/
+
+7. Pandas Documentation:  
+   https://pandas.pydata.org/docs/
+
+8. NumPy Documentation:  
+   https://numpy.org/doc/
+
+---
+
+# 13. APPENDIX
+
+## 13.1 Glossary
+
+| Term | Meaning |
+|---|---|
+| AI | Artificial Intelligence |
+| ML | Machine Learning |
+| NLP | Natural Language Processing |
+| Spam | Unwanted or unsolicited email |
+| Ham | Legitimate email |
+| TF-IDF | Term Frequency–Inverse Document Frequency |
+| Flask | Python web application framework |
+| API | Application Programming Interface |
+| OAuth 2.0 | Authorization framework |
+| Gmail API | Interface for accessing Gmail services |
+| Model | Trained machine-learning algorithm |
+| Classification | Assigning input data to predefined categories |
+
+## 13.2 Project Directory Structure
+
+The project contains the following major files and directories:
+
+```text
+Spam-Email-Detection/
+│
+├── dataset/
+│   └── emails.csv
+│
+├── models/
+│   └── spam_classifier.pkl
+│
+├── src/
+│
+├── static/
+│   └── style.css
+│
+├── templates/
+│   └── index.html
+│
+├── tests/
+│
+├── app.py
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+The exact contents of individual folders may vary according to the final project version.
+
+## 13.3 Important Project Components
+
+**Dataset:** Contains the email text and corresponding labels.
+
+**TF-IDF Vectorizer:** Converts email text into numerical features.
+
+**Multinomial Naive Bayes Model:** Predicts whether an email is Spam or Ham.
+
+**Flask Application:** Connects the trained model with the web interface.
+
+**Gmail API Integration:** Retrieves inbox messages after user authorization.
+
+**Dashboard:** Displays email information and classification results.
+
+## 13.4 Final Project Information
+
+| Field | Details |
+|---|---|
+| Project Name | MailGuard AI |
+| Project Type | Machine Learning and Web Application |
+| Student Name | Priyal Prasad Deshmukh |
+| Roll Number | CS3125 |
+| Department | Computer Science and Engineering |
+| Institution | CSMSS, CS COE |
+| Academic Year | 2026–2027 |
+| Programming Language | Python |
+| Framework | Flask |
+| ML Algorithm | Multinomial Naive Bayes |
+| Feature Extraction | TF-IDF |
+| Email Integration | Gmail API |
+| Authentication | OAuth 2.0 |
+
+---
+
+**END OF PROJECT REPORT**
