@@ -1,71 +1,177 @@
-# MailGuard-AI
+# 🛡️ MailGuard AI
+### Machine Learning-Based Spam Email Detection System
 
-A machine learning web app that detects spam and legitimate (ham) emails, with optional Gmail integration to scan your inbox.
+MailGuard AI is a web-based email security application that uses Machine Learning and Natural Language Processing (NLP) to classify emails as **Spam** or **Ham (Legitimate)**.
 
-![Dashboard screenshot](screenshots/dashboard.png)
+It combines a TF-IDF-based text processing pipeline, a Multinomial Naive Bayes classifier and Gmail API integration to provide automated email scanning through an interactive security dashboard.
 
-## Features
-- Paste any email and get an instant SPAM / HAM prediction
-- Connect Gmail (read-only) and classify your 10 most recent inbox emails
-- Dashboard with model accuracy, precision/recall/F1 and confusion matrix
+## ✨ Features
 
-## Model performance
-| Metric | Value |
+- **Spam Detection:** Classifies email content as Spam or Ham.
+- **Machine Learning:** Uses a trained Multinomial Naive Bayes classifier.
+- **NLP Processing:** Applies TF-IDF for text feature extraction.
+- **Manual Email Scanning:** Allows users to submit email content for classification.
+- **Gmail Integration:** Connects to Gmail using OAuth 2.0 authentication.
+- **Automated Email Scanning:** Fetches inbox emails and classifies their content.
+- **Interactive Dashboard:** Displays email information and classification results.
+
+## 🧠 Machine Learning Approach
+
+The project follows a supervised machine learning approach.
+
+| Stage | Technique |
 |---|---|
-| Algorithm | Multinomial Naive Bayes |
-| Features | TF-IDF |
-| Test accuracy | 98.21% (550 / 560 correct) |
+| Dataset | Labeled email dataset |
+| Text Processing | TF-IDF Vectorization |
+| Stop Word Removal | English stop words |
+| Feature Limit | 10,000 features |
+| Train-Test Split | 80:20 |
+| Classification Algorithm | Multinomial Naive Bayes |
+| Saved Model | `spam_classifier.pkl` |
 
-Confusion matrix on 560 test emails:
+The model learns from labeled email examples and predicts whether new email content belongs to the Spam or Ham category.
 
-| | Predicted HAM | Predicted SPAM |
-|---|---|---|
-| Actual HAM | 277 | 3 |
-| Actual SPAM | 7 | 273 |
+## 🛠️ Technology Stack
 
-## Tech stack
-Python, Flask, scikit-learn, joblib, Google Gmail API (OAuth 2.0), HTML/CSS
+- **Language:** Python
+- **Backend:** Flask
+- **Machine Learning:** Scikit-learn
+- **NLP:** TF-IDF
+- **Frontend:** HTML, CSS
+- **Email Service:** Gmail API
+- **Authentication:** OAuth 2.0
+- **Version Control:** Git and GitHub
 
-## Project structure
-```
+## 📁 Project Structure
+
+```text
 Spam-Email-Detection/
-├── app.py               # Flask app and Gmail integration
-├── dataset/             # Training emails
-├── models/              # Trained spam_classifier.pkl
+│
+├── dataset/
+│   └── emails.csv
+│
+├── models/
+│   └── spam_classifier.pkl
+│
 ├── src/
-│   ├── prepare_dataset.py
-│   ├── train_model.py
-│   └── predict.py
-├── static/style.css
-├── templates/index.html
-└── requirements.txt
+│
+├── static/
+│   └── style.css
+│
+├── templates/
+│   └── index.html
+│
+├── tests/
+│
+├── app.py
+├── .gitignore
+├── requirements.txt
+└── README.md
 ```
 
-## Setup
-1. Clone the repo and create a virtual environment:
-   ```
-   git clone https://github.com/Priyal-Deshmukh/MailGuard-AI.git
-   cd MailGuard-AI
-   python -m venv venv
-   venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-2. (Optional, for Gmail) Create OAuth credentials in Google Cloud Console, enable the Gmail API, download the file as `credentials.json` into the project root, and add `http://127.0.0.1:5000/oauth2callback` as a redirect URI.
-3. Set a secret key and run:
-   ```
-   $env:FLASK_SECRET_KEY="your-random-secret"
-   python app.py
-   ```
-4. Open http://127.0.0.1:5000
+## ⚙️ Installation and Setup
 
-## Privacy
-Gmail access is read-only (`gmail.readonly`). Emails are classified locally and are not stored.
+### 1. Clone the repository
 
-## Limitations and future scope
-- Single shared Gmail token (per-user login needed for production)
-- Compare with logistic regression / transformer models
-- Phishing link detection
-- Move detected spam to the Spam folder
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
 
-## Author
-Priyal Deshmukh
+### 2. Navigate to the project directory
+
+```bash
+cd Spam-Email-Detection
+```
+
+### 3. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 4. Activate the virtual environment
+
+**Windows PowerShell:**
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Configure the Flask secret key
+
+```powershell
+$env:FLASK_SECRET_KEY = python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+### 7. Configure Gmail API
+
+To use Gmail integration:
+
+1. Create or select a project in Google Cloud Console.
+2. Enable the Gmail API.
+3. Configure the OAuth consent screen.
+4. Create OAuth 2.0 client credentials for a Desktop or Web application, according to the application's configured OAuth flow.
+5. Save the credentials file as `credentials.json` in the project root.
+6. Complete the Gmail authorization process when prompted by the application.
+
+The application uses OAuth authentication to access Gmail. The required redirect URI must match the URI configured in the application and Google Cloud Console.
+
+### 8. Run the application
+
+```bash
+python app.py
+```
+
+Open the following address in your browser:
+
+```text
+http://127.0.0.1:5000
+```
+
+## 📧 How It Works
+
+1. Open the MailGuard AI dashboard.
+2. Enter email content for manual classification or connect your Gmail account.
+3. Authenticate with Google when required.
+4. Fetch inbox emails through the Gmail API.
+5. The application processes the email content using TF-IDF.
+6. The trained classifier predicts Spam or Ham.
+7. View the classification results on the dashboard.
+
+## 🔐 Security Notes
+
+- Never upload `credentials.json`, `token.json` or `.env` files to a public repository.
+- Keep your Flask secret key private.
+- Use OAuth authentication for Gmail access.
+- Grant only the required Gmail permissions.
+- Do not publish personal email content or authentication tokens.
+
+## 🚀 Future Improvements
+
+- Advanced phishing detection.
+- Suspicious URL analysis.
+- Attachment security scanning.
+- Deep learning-based classification.
+- Improved model evaluation and analytics.
+- Enhanced email security reporting.
+
+## 📄 Project Documentation
+
+For the detailed academic project report, refer to [`PROJECT_REPORT.md`](PROJECT_REPORT.md).
+
+## 👩‍💻 Project Information
+
+**Project Name:** MailGuard AI  
+**Project Domain:** Artificial Intelligence and Machine Learning  
+**Project Type:** Web-Based Application  
+**Primary Objective:** Automated Spam Email Detection
+
+---
+
+*MailGuard AI — Making email communication smarter and safer through Machine Learning.*
